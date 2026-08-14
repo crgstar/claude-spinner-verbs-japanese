@@ -13,7 +13,7 @@ Claude Code が作業中に表示する動詞（`Pondering…` `Schlepping…` �
 
 ## 収録内容
 
-Claude Code 本体（v2.1.232 で確認）に組み込まれている **186 語すべて**。並び順も本体と揃えてあるので、差分が追いやすい。各行の形式は次のとおり。
+Claude Code 本体に組み込まれている動詞をすべて収録している。並び順も本体と揃えてあるので差分が追いやすい。各行の形式は次のとおり。
 
 ```
 語(発音記号)… 日本語訳… （語源の背景）
@@ -21,7 +21,7 @@ Claude Code 本体（v2.1.232 で確認）に組み込まれている **186 語�
 
 - **発音記号** — 国際音声記号（IPA）。米音基準。結合文字を含まない単一コードポイントのみを使用
 - **日本語訳** — 一般的な訳語を進行形で。語源に引きずられた訳語は使わない（例: `Cooking` は「煮炊き」ではなく「料理」）
-- **語源の背景** — 由来する言語と原義、そこから派生した語や逸話。固有名詞には「それが何か」を必ず添える。**定説がない語は「語源不明」「〜説がある」と明示**しており、断定していない（Puzzling, Shenaniganing, Canoodling, Flummoxing, Skedaddling, Moseying, Swirling, Julienning, Finagling, Lollygagging, Smooshing, Shimmying, Topsy-turvying, Tinkering の 14 語）
+- **語源の背景** — 由来する言語と原義、そこから派生した語や逸話。固有名詞には「それが何か」を必ず添える。**定説がない語は「語源不明」「〜説がある」と明示**しており、断定していない（Puzzling, Shenaniganing, Canoodling, Flummoxing, Skedaddling, Moseying, Swirling, Julienning, Finagling, Lollygagging, Smooshing, Shimmying, Topsy-turvying, Tinkering）
 
 ## 使い方
 
@@ -40,8 +40,8 @@ jq -s '.[0] * .[1]' ~/.claude/settings.json spinner-verbs.json > /tmp/s.json \
 
 | mode | 挙動 |
 |---|---|
-| `replace` | この 186 語だけを使う（本リポジトリの既定） |
-| `append` | 組み込みの英語 186 語の後ろに足す |
+| `replace` | このリポジトリの語だけを使う（本リポジトリの既定） |
+| `append` | 組み込みの英語の語の後ろに足す |
 
 `replace` で `verbs` が空配列だと組み込みの既定リストに戻る仕様なので、反映されないときはそこを確認する。
 
@@ -51,17 +51,14 @@ Claude Code の更新で語が増減しても気付けないので、照合ス�
 
 ```console
 $ ./check-upstream.py
-Claude Code 2.1.232 と照合: 本家 186 語 / 手元 186 語
 差分なし
 ```
 
-差分があるとこう出る（exit code 1）。
+差分があると、増えた語と消えた語を並べて exit code 1 を返す。
 
 ```console
 $ ./check-upstream.py
-Claude Code 2.1.232 と照合: 本家 187 語 / 手元 186 語
-
-本家に増えた語 (1):
+本家に増えた語:
   + Whittling
 
 spinner-verbs.json を更新する
@@ -69,17 +66,13 @@ spinner-verbs.json を更新する
 
 `~/.local/share/claude/versions/` にある最新のバイナリから動詞の配列を直接読み出して比較する。バイナリが見つからない、あるいは本体の構造が変わって配列を取り出せない場合は exit code 2 で止まる（差分なしと誤報しない）。
 
-なお、`Flambéing` と `Sautéing` は本体内で `é` が `\xE9` としてエスケープされているため、単純な文字列走査では取りこぼす。スクリプトはこれをデコードして扱う。
+なお `Flambéing` と `Sautéing` は本体内で `é` が `\xE9` としてエスケープされているため、単純な文字列走査では取りこぼす。スクリプトはこれをデコードして扱う。
 
 ## 表示幅について
 
-1 行が長い。日本語訳と背景を入れているため、**動詞部分だけで平均 104 桁・最長 188 桁**ある。経過時間や `esc to interrupt` の表示がこの後ろに 45 桁ほど続くので、ターミナルの横幅が足りないと折り返して 2 行になる。
+1 行が長い。日本語訳と背景を入れているので、経過時間や `esc to interrupt` の表示と合わせると、ターミナルの横幅が足りないときは折り返して 2 行になる。
 
-短くしたい場合は、次のいずれかを削ると詰められる。
-
-- 発音記号を落とす → 12〜18 桁
-- 日本語訳を落とす → 20 桁前後
-- 背景の後半（派生・逸話の部分）を落とす → 30 桁前後
+短くしたい場合は、発音記号・日本語訳・背景の後半（派生や逸話の部分）のいずれかを削ると詰められる。
 
 ## 補足
 
